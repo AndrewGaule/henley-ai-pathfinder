@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ConversationalAnswers } from "@/types/participant";
-import { ArrowRight, Send } from "lucide-react";
+import { ArrowRight, Send, Mic, MicOff } from "lucide-react";
+import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 
 const QUESTIONS = [
   {
@@ -40,6 +41,37 @@ export function ConversationalQuestions({ onSubmit }: ConversationalQuestionsPro
 
   const currentQuestion = QUESTIONS[currentIndex];
   const isLastQuestion = currentIndex === QUESTIONS.length - 1;
+
+  // Voice input hook
+  const {
+    isListening,
+    isSupported,
+    transcript,
+    startListening,
+    stopListening,
+    resetTranscript,
+    error: voiceError
+  } = useSpeechRecognition({
+    onResult: (text) => {
+      // Update the current answer with voice transcript
+      setAnswers({ ...answers, [currentQuestion.key]: text });
+    },
+    continuous: false,
+    interimResults: true
+  });
+
+  // Reset transcript when moving to next question
+  useEffect(() => {
+    resetTranscript();
+  }, [currentIndex]);
+
+  const toggleVoiceInput = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
 
   const handleNext = () => {
     const currentAnswer = answers[currentQuestion.key].trim();
@@ -87,19 +119,44 @@ export function ConversationalQuestions({ onSubmit }: ConversationalQuestionsPro
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="answer" className="sr-only">Your answer</Label>
-            <Textarea
-              id="answer"
-              value={answers[currentQuestion.key]}
-              onChange={(e) => {
-                setAnswers({ ...answers, [currentQuestion.key]: e.target.value });
-                setError("");
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder="Type your answer here..."
-              className={`min-h-[140px] resize-none ${error ? "border-destructive" : ""}`}
-              autoFocus
-            />
+            <div className="relative">
+              <Textarea
+                id="answer"
+                value={answers[currentQuestion.key]}
+                onChange={(e) => {
+                  setAnswers({ ...answers, [currentQuestion.key]: e.target.value });
+                  setError("");
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={isListening ? "Listening... speak now" : "Type your answer here or click the microphone to speak"}
+                className={`min-h-[140px] resize-none pr-12 ${error ? "border-destructive" : ""} ${isListening ? "border-primary ring-2 ring-primary/20" : ""}`}
+                autoFocus
+              />
+              {isSupported && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleVoiceInput}
+                  className={`absolute right-2 top-2 ${isListening ? "text-primary animate-pulse" : "text-muted-foreground hover:text-foreground"}`}
+                  title={isListening ? "Stop recording" : "Start voice input"}
+                >
+                  {isListening ? (
+                    <MicOff className="h-5 w-5" />
+                  ) : (
+                    <Mic className="h-5 w-5" />
+                  )}
+                </Button>
+              )}
+            </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
+            {voiceError && <p className="text-sm text-destructive">{voiceError}</p>}
+            {isListening && (
+              <p className="text-sm text-primary animate-pulse flex items-center gap-2">
+                <span className="inline-block w-2 h-2 bg-primary rounded-full animate-ping"></span>
+                Listening... speak your answer
+              </p>
+            )}
           </div>
 
           <Button onClick={handleNext} className="w-full gap-2">
@@ -117,7 +174,11 @@ export function ConversationalQuestions({ onSubmit }: ConversationalQuestionsPro
           </Button>
 
           <p className="text-xs text-muted-foreground text-center">
-            Press ⌘ + Enter to continue
+            {isSupported ? (
+              <>Press ⌘ + Enter to continue • Click <Mic className="inline h-3 w-3" /> to use voice input</>
+            ) : (
+              "Press ⌘ + Enter to continue"
+            )}
           </p>
         </div>
       </div>
