@@ -177,19 +177,34 @@ Trigger a manual deployment:
 
 ---
 
-## Environment Variables (If Needed)
+## Environment Variables
 
-Currently, this app doesn't require environment variables. If you add a backend API in the future:
+### Supabase Configuration (Recommended)
 
-1. Go to **Settings** > **Environment**
-2. Add variables like:
-   ```
-   VITE_API_URL=https://api.example.com
-   VITE_ENV=production
-   ```
-3. Redeploy for changes to take effect
+To enable real database storage and collect submissions from all users, configure Supabase:
 
-**Important:** Vite requires environment variables to be prefixed with `VITE_`
+1. **Set up Supabase** - Follow [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) to create your database
+2. **Add environment variables** in Render:
+   - Go to **Settings** > **Environment**
+   - Click **"Add Environment Variable"**
+   - Add both variables:
+
+   | Key | Value | Description |
+   |-----|-------|-------------|
+   | `VITE_SUPABASE_URL` | `https://xxxxx.supabase.co` | Your Supabase project URL |
+   | `VITE_SUPABASE_ANON_KEY` | `eyJhbGci...` | Your Supabase anonymous key |
+
+3. **Save and redeploy** - Render will automatically rebuild with new variables
+
+**Without Supabase:**
+- App will fall back to localStorage (browser-only storage)
+- You won't be able to see submissions from other users
+- Admin dashboard only shows data from your own browser
+
+**Important:**
+- Vite requires environment variables to be prefixed with `VITE_`
+- Never commit `.env` files to git (already in `.gitignore`)
+- The `anon` key is safe to expose in frontend (protected by Row Level Security)
 
 ---
 

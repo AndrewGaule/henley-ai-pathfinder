@@ -5,7 +5,8 @@ import { ConversationalQuestions } from "@/components/intake/ConversationalQuest
 import { ProcessingScreen } from "@/components/intake/ProcessingScreen";
 import { ResultScreen } from "@/components/intake/ResultScreen";
 import { analyzeParticipant } from "@/lib/ai-service";
-import { saveParticipant } from "@/lib/storage";
+import { saveParticipant, isSupabaseConfigured } from "@/lib/supabase-storage";
+import { saveParticipant as saveParticipantLocal } from "@/lib/storage";
 import type { BasicDetails, ConversationalAnswers, AIAnalysis } from "@/types/participant";
 
 type Step = "welcome" | "details" | "questions" | "processing" | "result";
@@ -35,13 +36,27 @@ const Index = () => {
       const result = await analyzeParticipant(basicDetails!, conversationalAnswers);
       setAnalysis(result);
 
-      saveParticipant({
+      const participant = {
         id: crypto.randomUUID(),
         timestamp: new Date().toISOString(),
         basicDetails: basicDetails!,
         answers: conversationalAnswers,
         analysis: result,
-      });
+      };
+
+      // Try to save to Supabase first, fallback to localStorage
+      if (isSupabaseConfigured()) {
+        try {
+          await saveParticipant(participant);
+          console.log('Participant saved to Supabase');
+        } catch (supabaseError) {
+          console.error('Supabase save failed, falling back to localStorage:', supabaseError);
+          saveParticipantLocal(participant);
+        }
+      } else {
+        console.log('Supabase not configured, saving to localStorage');
+        saveParticipantLocal(participant);
+      }
 
       setStep("result");
     } catch (err) {
