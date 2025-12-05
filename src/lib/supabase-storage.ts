@@ -52,6 +52,11 @@ function rowToParticipant(row: ParticipantRow): Participant {
  * Sorted by timestamp descending (newest first)
  */
 export async function getParticipants(): Promise<Participant[]> {
+  if (!supabase) {
+    console.warn('Supabase not configured')
+    return []
+  }
+
   try {
     const { data, error } = await supabase
       .from('participants')
@@ -74,6 +79,10 @@ export async function getParticipants(): Promise<Participant[]> {
  * Save a new participant to Supabase
  */
 export async function saveParticipant(participant: Participant): Promise<void> {
+  if (!supabase) {
+    throw new Error('Supabase not configured')
+  }
+
   try {
     const row = participantToRow(participant)
 
@@ -97,6 +106,11 @@ export async function saveParticipant(participant: Participant): Promise<void> {
  * Get a single participant by ID from Supabase
  */
 export async function getParticipantById(id: string): Promise<Participant | undefined> {
+  if (!supabase) {
+    console.warn('Supabase not configured')
+    return undefined
+  }
+
   try {
     const { data, error } = await supabase
       .from('participants')

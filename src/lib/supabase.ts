@@ -4,14 +4,16 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Validate that environment variables are set
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables!')
-  console.error('Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file')
-}
+// Create Supabase client only if environment variables are set
+export const supabase = (supabaseUrl && supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null
 
-// Create Supabase client
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '')
+// Log warning if Supabase is not configured (only in development)
+if (!supabase && import.meta.env.DEV) {
+  console.warn('⚠️ Supabase not configured. App will use localStorage instead.')
+  console.warn('To use Supabase, set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.')
+}
 
 // Database types for TypeScript
 export interface ParticipantRow {
