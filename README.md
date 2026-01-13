@@ -1,73 +1,134 @@
-# Welcome to your Lovable project
+# AI Business Change Workshop Survey App
 
-## Project info
+A comprehensive web-based survey application designed for collecting feedback from participants in AI business change workshops. Features pre-workshop and post-workshop surveys with multiple question types, real-time statistics, and CSV export capabilities.
 
-**URL**: https://lovable.dev/projects/da0c1e67-a3af-4502-a81b-26f943dd320c
+## Features
 
-## How can I edit this code?
+### Survey Capabilities
+- **Pre-Workshop Survey**: Collects participant information, AI knowledge assessment, expectations, and organizational context
+- **Post-Workshop Survey**: Gathers feedback on satisfaction, learning outcomes, content evaluation, and facilitation quality
+- **Question Types**:
+  - Multiple choice (single and multi-select)
+  - Rating scales (1-5)
+  - Text responses (short and long-form)
+- **Progress Tracking**: Visual progress indicators and section navigation
+- **Mobile-Friendly Design**: Fully responsive interface using Tailwind CSS and shadcn/ui
 
-There are several ways of editing your application.
+### Admin Dashboard
+- **Survey Results Overview**: View all responses with filtering by survey type
+- **Statistics Dashboard**: Real-time analytics including average completion times, response distributions, and rating averages
+- **Data Export**: Export survey results to CSV format
+- **Response Details**: View individual survey responses in detail
+- **Authentication**: Secure admin access
 
-**Use Lovable**
+### Data Storage
+- **Dual Storage**: LocalStorage (frontend fallback) and SQLite database (backend)
+- **Backend API**: RESTful API built with Node.js and Express
+- **Data Persistence**: All responses safely stored with transaction support
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/da0c1e67-a3af-4502-a81b-26f943dd320c) and start prompting.
+## Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+### Frontend
+- React 18 with TypeScript
+- Vite for fast development
+- React Router for navigation
+- Tailwind CSS for styling
+- shadcn/ui component library
+- Radix UI primitives
 
-**Use your preferred IDE**
+### Backend
+- Node.js with ES modules
+- Express for API server
+- better-sqlite3 for database
+- CORS enabled
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
+- Node.js 18+ or Bun
+- npm, yarn, or bun package manager
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+1. Install frontend dependencies:
+```bash
+npm install
 ```
 
-**Edit a file directly in GitHub**
+2. Install backend dependencies:
+```bash
+cd server
+npm install
+cd ..
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. Create environment file:
+```bash
+cp .env.example .env
+```
 
-**Use GitHub Codespaces**
+### Development
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Start the backend server:
+```bash
+cd server
+npm run dev
+```
+The API server will start on `http://localhost:3001`
 
-## What technologies are used for this project?
+2. In a new terminal, start the frontend:
+```bash
+npm run dev
+```
+The app will be available at `http://localhost:5173`
 
-This project is built with:
+### Building for Production
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+npm run build
+npm run preview
+```
 
-## How can I deploy this project?
+## Usage
 
-Simply open [Lovable](https://lovable.dev/projects/da0c1e67-a3af-4502-a81b-26f943dd320c) and click on Share -> Publish.
+### For Participants
+1. Navigate to the app homepage
+2. Choose "Pre-Workshop Survey" or "Post-Workshop Survey"
+3. Complete all required questions (marked with *)
+4. Navigate between sections using Next/Back buttons
+5. Submit the survey
 
-## Can I connect a custom domain to my Lovable project?
+### For Administrators
+1. Navigate to `/admin`
+2. Login with credentials (default: admin/admin)
+3. View survey responses and statistics
+4. Export data to CSV
+5. Filter responses by survey type
 
-Yes, you can!
+## API Endpoints
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- `GET /api/surveys/responses` - Get all responses
+- `POST /api/surveys/responses` - Save a new response
+- `GET /api/surveys/statistics` - Get survey statistics
+- `GET /api/surveys/export/csv` - Export responses to CSV
+- `GET /api/health` - Health check
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Survey Questions
+
+### Pre-Workshop Survey
+1. About You (name, email, organization, role)
+2. AI Knowledge & Experience
+3. Workshop Expectations
+4. Organization Context
+
+### Post-Workshop Survey
+1. Participant Information
+2. Overall Satisfaction
+3. Learning Outcomes
+4. Content Evaluation
+5. Facilitation & Delivery
+6. Feedback & Suggestions
+
+## License
+
+MIT License
