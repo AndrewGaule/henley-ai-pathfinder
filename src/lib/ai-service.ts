@@ -48,8 +48,21 @@ export async function analyzeParticipant(
   // Limit to 3 themes
   const finalThemes = themes.slice(0, 3);
 
+  // Helper function to safely extract first sentence or truncate text
+  const getFirstSentenceOrTruncate = (text: string, maxLength: number = 100): string => {
+    const trimmed = text.trim();
+    const firstSentence = trimmed.split(/[.!?]/)[0];
+    if (firstSentence.length > 0 && firstSentence.length <= maxLength) {
+      return firstSentence.toLowerCase();
+    }
+    // If no sentence delimiter or too long, truncate
+    return trimmed.length > maxLength
+      ? trimmed.substring(0, maxLength).toLowerCase() + '...'
+      : trimmed.toLowerCase();
+  };
+
   // Generate summary
-  const summary = `${details.name} from ${details.organisation} is a ${details.role} focused on ${details.focusArea.toLowerCase()}. They are seeking to leverage AI for ${answers.aiHope.split('.')[0].toLowerCase()}. Their primary challenge involves ${answers.aiStuck.split('.')[0].toLowerCase()}, and they measure success by ${answers.workshopSuccess.split('.')[0].toLowerCase()}.`;
+  const summary = `${details.name} from ${details.organisation} is a ${details.role} focused on ${details.focusArea.toLowerCase()}. They are seeking to leverage AI for ${getFirstSentenceOrTruncate(answers.aiHope)}. Their primary challenge involves ${getFirstSentenceOrTruncate(answers.aiStuck)}, and they measure success by ${getFirstSentenceOrTruncate(answers.workshopSuccess)}.`;
 
   return {
     summary,
